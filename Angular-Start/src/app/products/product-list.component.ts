@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { IProduct } from './product';
 
 
@@ -7,13 +7,14 @@ import { IProduct } from './product';
     templateUrl : './product-list.component.html',
     styleUrls : ['./product-list.component.css']
 })
-export class ProductListComponent
+export class ProductListComponent  implements OnInit
 {
 pageTitle : string ="Product List";
 imageWidth: number =20;
 imageMargin:number=2;
 showImage :boolean=true;
-listFilter : string ='cart';
+_listFilter : string;
+filterProducts : IProduct[];
 products : IProduct[]=[
     {
       "productId": 1,
@@ -66,9 +67,35 @@ products : IProduct[]=[
       "imageUrl": "https://openclipart.org/image/300px/svg_to_png/120337/xbox-controller_01.png"
     }
   ];
+  
+  constructor()
+  {
+
+    this.filterProducts = this.products;
+    this._listFilter ='cart';
+  }
+
+  set listFilter(value:string) {
+    this._listFilter=value;
+    this.filterProducts = this.listFilter ? this.performFilter(this.listFilter): this.products;
+  }
+
+  get listFilter(): string {
+    return this._listFilter;
+
+  }
 
   toggleImage():void {
      this.showImage=!this.showImage;
+  }
 
+  performFilter(filterBy:string) :IProduct[] {
+    filterBy=filterBy.toLocaleLowerCase();    
+    return this.products.filter((product:IProduct) => 
+              product.productName.toLocaleLowerCase().indexOf(filterBy) !== -1);
+  }
+
+  ngOnInit() : void {
+    console.log('Test for calling OnIt life cycle event');
   }
 }
